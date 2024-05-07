@@ -195,7 +195,7 @@ main(int argc, char* argv[])
 
     // Reset the address base-- all of the CSMA networks will be in
     // the "172.16 address space
-    ipAddrs.SetBase("172.16.0.0", "255.255.255.0");
+    ipAddrs.SetBase("172.168.0.0", "255.255.255.0");
 
     for (uint32_t i = 0; i < backboneNodes; ++i)
     {
@@ -376,17 +376,17 @@ main(int argc, char* argv[])
     // Let's set up some ns-2-like ascii traces, using another helper class
     //
     AsciiTraceHelper ascii;
-    Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream("mixed-wireless.tr");
+    Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream("taller.tr");
     wifiPhy.EnableAsciiAll(stream);
     csma.EnableAsciiAll(stream);
     internet.EnableAsciiIpv4All(stream);
 
     // Csma captures in non-promiscuous mode
-    csma.EnablePcapAll("mixed-wireless", false);
+    csma.EnablePcapAll("taller", false);
     // pcap captures on the backbone wifi devices
-    wifiPhy.EnablePcap("mixed-wireless", backboneDevices, false);
+    wifiPhy.EnablePcap("taller", backboneDevices, false);
     // pcap trace on the application data sink
-    wifiPhy.EnablePcap("mixed-wireless", appSink->GetId(), 0);
+    wifiPhy.EnablePcap("tallet", appSink->GetId(), 0);
 
     if (useCourseChangeCallback)
     {
@@ -394,7 +394,7 @@ main(int argc, char* argv[])
                         MakeCallback(&CourseChangeCallback));
     }
 
-    AnimationInterface anim("mixed-wireless.xml");
+    AnimationInterface anim("taller.xml");
 
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
