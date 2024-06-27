@@ -30,6 +30,7 @@ int main(int argc, char* argv[])
     uint32_t infraNodes = 2;
     uint32_t lanNodes = 2;
     uint32_t stopTime = 20;
+    // Activar el CourseChangeCallback
     bool useCourseChangeCallback = false;
 
     // Set default values for simulation parameters
@@ -132,9 +133,8 @@ int main(int argc, char* argv[])
     mobilityC.Install(clusterC);
 
     // ---------------- Activar el CourseChangeCallback -----------------
-    // Cambiar a true para activar
+    // se activa arriba
     // permiten registrar y mostrar las posiciones de los nodos cada vez que cambian de curso (posición).
-    bool useCourseChangeCallback = true;
     if (useCourseChangeCallback)
     {
         Config::Connect("/NodeList/*/$ns3::MobilityModel/CourseChange",
