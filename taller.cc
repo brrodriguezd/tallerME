@@ -4,9 +4,26 @@
 #include "ns3/mobility-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/adhoc-wifi-mac.h"
+#include "ns3/wifi-module.h"
 #include "ns3/wifi-helper.h"
 #include "ns3/aodv-module.h"
 #include "ns3/applications-module.h"
+#include "ns3/flow-monitor-module.h"
+#include "ns3/animation-interface.h"
+#include "ns3/command-line.h"
+#include "ns3/csma-helper.h"
+#include "ns3/internet-stack-helper.h"
+#include "ns3/ipv4-address-helper.h"
+#include "ns3/mobility-helper.h"
+#include "ns3/olsr-helper.h"
+#include "ns3/on-off-helper.h"
+#include "ns3/packet-sink-helper.h"
+#include "ns3/qos-txop.h"
+#include "ns3/ssid.h"
+#include "ns3/string.h"
+#include "ns3/yans-wifi-channel.h"
+#include "ns3/yans-wifi-helper.h"
+
 
 using namespace ns3;
 
@@ -46,7 +63,17 @@ int main(int argc, char* argv[])
     cmd.AddValue("useCourseChangeCallback",
         "whether to enable course change tracing",
         useCourseChangeCallback);
+    //
+    // The system global variables and the local values added to the argument
+    // system can be overridden by command line arguments by using this call.
+    //
     cmd.Parse(argc, argv);
+
+    if (stopTime < 10)
+    {
+        std::cout << "Use a simulation stop time >= 10 seconds" << std::endl;
+        exit(1);
+    }
 
     // Create nodes for clusters
     NodeContainer clusterA, clusterB, clusterC;
@@ -54,20 +81,20 @@ int main(int argc, char* argv[])
     clusterB.Create(3);
     clusterC.Create(3);
 
-    // Install WiFi and Internet stack
+    // Set up WiFi and channel
     WifiHelper wifi;
-    wifi.SetStandard(WIFI_PHY_STANDARD_80211b);
-    WifiMacHelper wifiMac;
-    wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager", "DataMode", StringValue("DsssRate1Mbps"));
+    WifiMacHelper mac;
+    mac.SetType("ns3::AdhocWifiMac");
+    wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager", "DataMode", StringValue("OfdmRate54Mbps"));
 
-    YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default();
+    YansWifiPhyHelper wifiPhy;
+    wifiPhy.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
     YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default();
     wifiPhy.SetChannel(wifiChannel.Create());
 
-    wifiMac.SetType("ns3::AdhocWifiMac");
-    NetDeviceContainer devicesA = wifi.Install(wifiPhy, wifiMac, clusterA);
-    NetDeviceContainer devicesB = wifi.Install(wifiPhy, wifiMac, clusterB);
-    NetDeviceContainer devicesC = wifi.Install(wifiPhy, wifiMac, clusterC);
+    NetDeviceContainer devicesA = wifi.Install(wifiPhy, mac, clusterA);
+    NetDeviceContainer devicesB = wifi.Install(wifiPhy, mac, clusterB);
+    NetDeviceContainer devicesC = wifi.Install(wifiPhy, mac, clusterC);
 
     // Install Internet stack and AODV routing protocol
     AodvHelper aodv;
