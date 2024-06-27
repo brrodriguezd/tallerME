@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
     uint32_t lanNodes = 2;
     uint32_t stopTime = 20;
     // Activar el CourseChangeCallback
-    bool useCourseChangeCallback = false;
+    bool useCourseChangeCallback = true;
 
     // Set default values for simulation parameters
     Config::SetDefault("ns3::OnOffApplication::PacketSize", StringValue("1472"));
@@ -156,7 +156,7 @@ int main(int argc, char* argv[])
         "Mode", StringValue("Time"),
         "Time", StringValue("2s"),
         "Speed", StringValue("ns3::ConstantRandomVariable[Constant=1.0]"),
-        "Bounds", RectangleValue(Rectangle(-50, 50, -50, 50)));
+        "Bounds", RectangleValue(Rectangle(-500, 500, -500, 500)));
     mobilityC.Install(clusterC);
 
     // ---------------- Activar el CourseChangeCallback -----------------
