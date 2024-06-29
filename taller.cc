@@ -42,23 +42,18 @@ int main(int argc, char* argv[])
     // Log Component
     LogComponentEnable("ManetSimulation", LOG_LEVEL_INFO);
 
-    // Local Variables
-    uint32_t backboneNodes = 10;
-    uint32_t infraNodes = 2;
-    uint32_t lanNodes = 2;
+    // Local Variables 
     uint32_t stopTime = 20;
+
     // Activar el CourseChangeCallback
     bool useCourseChangeCallback = true;
 
     // Set default values for simulation parameters
-    Config::SetDefault("ns3::OnOffApplication::PacketSize", StringValue("1472"));
-    Config::SetDefault("ns3::OnOffApplication::DataRate", StringValue("100kb/s"));
+    Config::SetDefault("ns3::OnOffApplication::PacketSize", StringValue("1472")); //paquetes en bytes
+    Config::SetDefault("ns3::OnOffApplication::DataRate", StringValue("100kb/s")); //tasa de transferencia de datos
 
     // Command line arguments
     CommandLine cmd(__FILE__);
-    cmd.AddValue("backboneNodes", "number of backbone nodes", backboneNodes);
-    cmd.AddValue("infraNodes", "number of leaf nodes", infraNodes);
-    cmd.AddValue("lanNodes", "number of LAN nodes", lanNodes);
     cmd.AddValue("stopTime", "simulation stop time (seconds)", stopTime);
     cmd.AddValue("useCourseChangeCallback",
         "whether to enable course change tracing",
@@ -81,17 +76,21 @@ int main(int argc, char* argv[])
     clusterB.Create(3);
     clusterC.Create(3);
 
+    NS_LOG_INFO("Cluster A created with ConstantPositionMobilityModel");
+    NS_LOG_INFO("Cluster B created with RandomWaypointMobilityModel");
+    NS_LOG_INFO("Cluster C created with RandomWalk2dMobilityModel");
+
     // Set up WiFi and channel
     WifiHelper wifi;
     WifiMacHelper mac;
     mac.SetType("ns3::AdhocWifiMac");
     wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager", "DataMode", StringValue("OfdmRate54Mbps"));
-
+    // Capa física WiFi
     YansWifiPhyHelper wifiPhy;
     wifiPhy.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
     YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default();
     wifiPhy.SetChannel(wifiChannel.Create());
-
+    //instala WiFi en cada cluster
     NetDeviceContainer devicesA = wifi.Install(wifiPhy, mac, clusterA);
     NetDeviceContainer devicesB = wifi.Install(wifiPhy, mac, clusterB);
     NetDeviceContainer devicesC = wifi.Install(wifiPhy, mac, clusterC);
@@ -200,8 +199,16 @@ int main(int argc, char* argv[])
     wifiPhy.EnableAsciiAll(ascii.CreateFileStream("manet-simulation.tr"));
     // ------------------------------------------------------------
 
+    NS_LOG_INFO("Run Simulation.");
+
     // Set simulation stop time
-    Simulator::Stop(Seconds(20.0));
+    Simulator::Stop(Seconds(stopTime));
+
+    // configurar la interfaz de animación
+    AnimationInterface anim("manet-simulation.xml");
+
+    // Habilitar la traza de movimientos de nodos
+    anim.EnablePacketMetadata(true);
 
     // Run the simulator
     Simulator::Run();
