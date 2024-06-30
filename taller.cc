@@ -37,11 +37,6 @@ void CourseChangeCallback(std::string path, Ptr<const MobilityModel> model)
         << ", z=" << position.z << std::endl;
 }
 
-void PacketArrivalCallback(Ptr<const Packet> packet, const Address& from) {
-    Time now = Simulator::Now();
-    NS_LOG_INFO("Paquete recibido en el nodo: Tiempo = " << now.GetSeconds() << "s");
-}
-
 int main(int argc, char* argv[])
 {
     // Log Component
@@ -194,13 +189,11 @@ int main(int argc, char* argv[])
     //sink for B
     PacketSinkHelper sinkToB("ns3::UdpSocketFactory", InetSocketAddress(Ipv4Address::GetAny(), port));
     ApplicationContainer sinkAppToB = sinkToB.Install(clusterB.Get(0));
-    sinkToB.SetAttribute("OnPacketRx", CallbackValue(MakeCallback(&PacketArrivalCallback)));
     sinkAppToB.Start(Seconds(0.0));
     sinkAppToB.Stop(Seconds(20.0));
     //sink for C
     PacketSinkHelper sinkToC("ns3::UdpSocketFactory", InetSocketAddress(Ipv4Address::GetAny(), port));
     ApplicationContainer sinkAppToC = sinkToC.Install(clusterC.Get(0));
-    sinkToC.SetAttribute("OnPacketRx", CallbackValue(MakeCallback(&PacketArrivalCallback)));
     sinkAppToC.Start(Seconds(0.0));
     sinkAppToC.Stop(Seconds(20.0));
     // ------------------------------------------------------------
