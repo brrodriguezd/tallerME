@@ -203,14 +203,33 @@ int main(int argc, char* argv[])
     // Se supone que configura un registro para capturar medidas de rendimiento:
     // 
     // Enable PCAP tracing for each node
-    wifiPhy.EnablePcap("clusterA", devicesA);
-    wifiPhy.EnablePcap("clusterB", devicesB);
-    wifiPhy.EnablePcap("clusterC", devicesC);
+   //wifiPhy.EnablePcap("clusterA", devicesA);
+   //wifiPhy.EnablePcap("clusterB", devicesB);
+   //wifiPhy.EnablePcap("clusterC", devicesC);
+   //
+   //// Enable ASCII tracing
+   //AsciiTraceHelper ascii;
+   //wifiPhy.EnableAsciiAll(ascii.CreateFileStream("manet-simulation.tr"));
+   //// ------------------------------------------------------------
 
-    // Enable ASCII tracing
+
+    // ----------- Configurar el Registro de Resultados -----------
+    CsmaHelper csma;
     AsciiTraceHelper ascii;
-    wifiPhy.EnableAsciiAll(ascii.CreateFileStream("manet-simulation.tr"));
+    Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream("taller1.tr");
+    wifiPhy.EnableAsciiAll(stream);
+    csma.EnableAsciiAll(stream);
+    internet.EnableAsciiIpv4All(stream);
+
+    // Csma captures in non-promiscuous mode
+    csma.EnablePcapAll("taller", false);
+    // pcap captures on the backbone wifi devices
+    // (replace backboneDevices with the actual devices)
+    wifiPhy.EnablePcap("taller", devicesA, false);
+    // pcap trace on the application data sink
+    wifiPhy.EnablePcap("tallet", sinkAppToB.Get(0)->GetId(), 0);
     // ------------------------------------------------------------
+
 
     NS_LOG_INFO("Run Simulation.");
 
