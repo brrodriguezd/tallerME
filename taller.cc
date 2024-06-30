@@ -221,11 +221,13 @@ int main(int argc, char* argv[])
     AnimationInterface anim("manet-simulation.xml");
 
     // Habilitar la traza de movimientos de nodos
-    anim.EnablePacketMetadata(true);
+    anim.EnablePacketMetadata(false);
 
     // Run the simulator
     Simulator::Run();
     Simulator::Destroy();
+
+    std::cout << "La simulación ha finalizado" << std::endl;
 
     return 0;
 }
