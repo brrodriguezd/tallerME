@@ -1,2 +1,3 @@
 build/*
-!build/taller.xml
+#ignorar los xml para el netanim
+!build/*.xml
