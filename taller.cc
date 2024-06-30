@@ -115,8 +115,8 @@ int main(int argc, char* argv[])
     // Set mobility for Cluster A (static)
     MobilityHelper mobilityA;
     mobilityA.SetPositionAllocator("ns3::GridPositionAllocator",
-        "MinX", DoubleValue(0.0),
-        "MinY", DoubleValue(0.0),
+        "MinX", DoubleValue(50.0),
+        "MinY", DoubleValue(50.0),
         "DeltaX", DoubleValue(5.0),
         "DeltaY", DoubleValue(10.0),
         "GridWidth", UintegerValue(3),
@@ -128,7 +128,7 @@ int main(int argc, char* argv[])
     // Set mobility for Cluster B (Random Waypoint)
     MobilityHelper mobilityB;
     mobilityB.SetPositionAllocator("ns3::GridPositionAllocator",
-        "MinX", DoubleValue(50.0),
+        "MinX", DoubleValue(20.0),
         "MinY", DoubleValue(50.0),
         "DeltaX", DoubleValue(5.0),
         "DeltaY", DoubleValue(10.0),
@@ -144,8 +144,8 @@ int main(int argc, char* argv[])
     // Set mobility for Cluster C (Random Walk)
     MobilityHelper mobilityC;
     mobilityC.SetPositionAllocator("ns3::GridPositionAllocator",
-        "MinX", DoubleValue(100.0),
-        "MinY", DoubleValue(100.0),
+        "MinX", DoubleValue(80.0),
+        "MinY", DoubleValue(50.0),
         "DeltaX", DoubleValue(5.0),
         "DeltaY", DoubleValue(10.0),
         "GridWidth", UintegerValue(3),
@@ -170,19 +170,32 @@ int main(int argc, char* argv[])
 
     // ---------------- Definir el Tráfico de Red -----------------
     
-    // Create an application to send UDP packets from a node in cluster A to a node in cluster B
     uint16_t port = 9;
-    OnOffHelper onoff("ns3::UdpSocketFactory", InetSocketAddress(interfacesB.GetAddress(0), port));
-    onoff.SetConstantRate(DataRate("500kbps"));
-    ApplicationContainer app = onoff.Install(clusterA.Get(0));
-    app.Start(Seconds(1.0));
-    app.Stop(Seconds(19.0));
+    // Create an application to send UDP packets from a node in cluster A to a node in cluster B
+    OnOffHelper onoffToB("ns3::UdpSocketFactory", InetSocketAddress(interfacesB.GetAddress(0), port));
+    onoffToB.SetConstantRate(DataRate("500kbps"));
+    ApplicationContainer appToB = onoffToB.Install(clusterA.Get(0));
+    appToB.Start(Seconds(1.0));
+    appToB.Stop(Seconds(19.0));
 
-    // Packet sink to receive these packets on the destination node
-    PacketSinkHelper sink("ns3::UdpSocketFactory", InetSocketAddress(Ipv4Address::GetAny(), port));
-    app = sink.Install(clusterB.Get(0));
-    app.Start(Seconds(0.0));
-    app.Stop(Seconds(20.0));
+    // Create an application to send UDP packets from a node in cluster C to a node in cluster B
+    OnOffHelper onoffToC("ns3::UdpSocketFactory", InetSocketAddress(interfacesC.GetAddress(0), port));
+    onoffToC.SetConstantRate(DataRate("500kbps"));
+    ApplicationContainer appToC = onoffToC.Install(clusterA.Get(0));
+    appToC.Start(Seconds(1.0));
+    appToC.Stop(Seconds(19.0));
+
+    // Packet sinks to receive these packets on the destination nodes
+    //sink for B
+    PacketSinkHelper sinkToB("ns3::UdpSocketFactory", InetSocketAddress(Ipv4Address::GetAny(), port));
+    ApplicationContainer sinkAppToB = sinkToB.Install(clusterB.Get(0));
+    sinkAppToB.Start(Seconds(0.0));
+    sinkAppToB.Stop(Seconds(20.0));
+    //sink for C
+    PacketSinkHelper sinkToC("ns3::UdpSocketFactory", InetSocketAddress(Ipv4Address::GetAny(), port));
+    ApplicationContainer sinkAppToC = sinkToC.Install(clusterC.Get(0));
+    sinkAppToC.Start(Seconds(0.0));
+    sinkAppToC.Stop(Seconds(20.0));
     // ------------------------------------------------------------
 
 
