@@ -1,4 +1,3 @@
-
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
 #include "ns3/mobility-module.h"
@@ -136,7 +135,7 @@ int main(int argc, char* argv[])
         "LayoutType", StringValue("RowFirst"));
     // movilidad (Random Waypoint)
     mobilityB.SetMobilityModel("ns3::RandomWaypointMobilityModel",
-        "Speed", StringValue("ns3::UniformRandomVariable[Min=0.5|Max=3.0]"),
+        "Speed", StringValue("ns3::UniformRandomVariable[Min=1.0|Max=3.0]"),
         "Pause", StringValue("ns3::ConstantRandomVariable[Constant=2.0]"),
         "PositionAllocator", PointerValue(CreateObject<RandomRectanglePositionAllocator>()));
     mobilityB.Install(clusterB);
