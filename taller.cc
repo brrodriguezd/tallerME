@@ -169,7 +169,7 @@ int main(int argc, char* argv[])
     // ------------------------------------------------------------------
 
     // ---------------- Definir el Tráfico de Red -----------------
-    
+
     uint16_t port = 9;
     // Create an application to send UDP packets from a node in cluster A to a node in cluster B
     OnOffHelper onoffToB("ns3::UdpSocketFactory", InetSocketAddress(interfacesB.GetAddress(0), port));
@@ -222,6 +222,8 @@ int main(int argc, char* argv[])
 
     // Habilitar la traza de movimientos de nodos
     anim.EnablePacketMetadata(true);
+    // Habilitar la traza de paquetes
+    anim.EnablePacketTracking(true);
 
     // Run the simulator
     Simulator::Run();
