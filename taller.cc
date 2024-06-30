@@ -116,7 +116,7 @@ int main(int argc, char* argv[])
     MobilityHelper mobilityA;
     mobilityA.SetPositionAllocator("ns3::GridPositionAllocator",
         "MinX", DoubleValue(50.0),
-        "MinY", DoubleValue(50.0),
+        "MinY", DoubleValue(55.0),
         "DeltaX", DoubleValue(5.0),
         "DeltaY", DoubleValue(10.0),
         "GridWidth", UintegerValue(3),
@@ -128,8 +128,8 @@ int main(int argc, char* argv[])
     // Set mobility for Cluster B (Random Waypoint)
     MobilityHelper mobilityB;
     mobilityB.SetPositionAllocator("ns3::GridPositionAllocator",
-        "MinX", DoubleValue(20.0),
-        "MinY", DoubleValue(50.0),
+        "MinX", DoubleValue(35.0),
+        "MinY", DoubleValue(45.0),
         "DeltaX", DoubleValue(5.0),
         "DeltaY", DoubleValue(10.0),
         "GridWidth", UintegerValue(3),
@@ -144,8 +144,8 @@ int main(int argc, char* argv[])
     // Set mobility for Cluster C (Random Walk)
     MobilityHelper mobilityC;
     mobilityC.SetPositionAllocator("ns3::GridPositionAllocator",
-        "MinX", DoubleValue(80.0),
-        "MinY", DoubleValue(50.0),
+        "MinX", DoubleValue(65.0),
+        "MinY", DoubleValue(45.0),
         "DeltaX", DoubleValue(5.0),
         "DeltaY", DoubleValue(10.0),
         "GridWidth", UintegerValue(3),
