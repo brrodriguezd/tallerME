@@ -126,7 +126,7 @@ int main(int argc, char* argv[])
     mobilityA.SetMobilityModel("ns3::ConstantPositionMobilityModel");
     mobilityA.Install(clusterA);
 
-    // Configurar la movilidad para Cluster B (estático)
+    // Configurar la movilidad para Cluster B (Random Waypoint)
     MobilityHelper mobilityB;
     Ptr<ListPositionAllocator> positionAllocB = CreateObject<ListPositionAllocator>();
 
@@ -137,12 +137,12 @@ int main(int argc, char* argv[])
 
     mobilityB.SetPositionAllocator(positionAllocB);
     mobilityB.SetMobilityModel("ns3::RandomWaypointMobilityModel",
-        "Speed", StringValue("ns3::UniformRandomVariable[Min=0.5|Max=3.0]"),
+        "Speed", StringValue("ns3::UniformRandomVariable[Min=0.5|Max=2.0]"),
         "Pause", StringValue("ns3::ConstantRandomVariable[Constant=2.0]"),
         "PositionAllocator", PointerValue(CreateObject<RandomRectanglePositionAllocator>()));
     mobilityB.Install(clusterB);
 
-    // Configurar la movilidad para Cluster C (estático)
+    // Configurar la movilidad para Cluster C (Random Walk)
     MobilityHelper mobilityC;
     Ptr<ListPositionAllocator> positionAllocC = CreateObject<ListPositionAllocator>();
 
