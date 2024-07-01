@@ -111,45 +111,47 @@ int main(int argc, char* argv[])
     ipv4.SetBase("10.1.3.0", "255.255.255.0");
     Ipv4InterfaceContainer interfacesC = ipv4.Assign(devicesC);
 
-    // Set mobility for Cluster A (static)
+    // ---------------- Movilidad de Clusters A, B y C ----------------
+
+    // Configurar la movilidad para Cluster A (estático)
     MobilityHelper mobilityA;
-    mobilityA.SetPositionAllocator("ns3::GridPositionAllocator",
-        "MinX", DoubleValue(50.0),
-        "MinY", DoubleValue(50.0),
-        "DeltaX", DoubleValue(5.0),
-        "DeltaY", DoubleValue(10.0),
-        "GridWidth", UintegerValue(3),
-        "LayoutType", StringValue("RowFirst"));
-    // movilidad estatica
+    Ptr<ListPositionAllocator> positionAllocA = CreateObject<ListPositionAllocator>();
+
+    // Posiciones para los nodos en forma de triángulo
+    positionAllocA->Add(Vector(50.0, 45.0, 0.0)); // Nodo 1 en el centro
+    positionAllocA->Add(Vector(45.0, 50.0, 0.0)); // Nodo 2 a la izquierda
+    positionAllocA->Add(Vector(55.0, 50.0, 0.0)); // Nodo 3 a la derecha
+
+    mobilityA.SetPositionAllocator(positionAllocA);
     mobilityA.SetMobilityModel("ns3::ConstantPositionMobilityModel");
     mobilityA.Install(clusterA);
 
-    // Set mobility for Cluster B (Random Waypoint)
+    // Configurar la movilidad para Cluster B (estático)
     MobilityHelper mobilityB;
-    mobilityB.SetPositionAllocator("ns3::GridPositionAllocator",
-        "MinX", DoubleValue(0.0),
-        "MinY", DoubleValue(0.0),
-        "DeltaX", DoubleValue(5.0),
-        "DeltaY", DoubleValue(10.0),
-        "GridWidth", UintegerValue(3),
-        "LayoutType", StringValue("RowFirst"));
-    // movilidad (Random Waypoint)
+    Ptr<ListPositionAllocator> positionAllocB = CreateObject<ListPositionAllocator>();
+
+    // Posiciones para los nodos en forma de triángulo
+    positionAllocB->Add(Vector(20.0, 45.0, 0.0)); // Nodo 1 en el centro
+    positionAllocB->Add(Vector(15.0, 50.0, 0.0)); // Nodo 2 a la izquierda
+    positionAllocB->Add(Vector(25.0, 50.0, 0.0)); // Nodo 3 a la derecha
+
+    mobilityB.SetPositionAllocator(positionAllocB);
     mobilityB.SetMobilityModel("ns3::RandomWaypointMobilityModel",
-        "Speed", StringValue("ns3::UniformRandomVariable[Min=1.0|Max=3.0]"),
+        "Speed", StringValue("ns3::UniformRandomVariable[Min=0.5|Max=3.0]"),
         "Pause", StringValue("ns3::ConstantRandomVariable[Constant=2.0]"),
         "PositionAllocator", PointerValue(CreateObject<RandomRectanglePositionAllocator>()));
     mobilityB.Install(clusterB);
 
-    // Set mobility for Cluster C (Random Walk)
+    // Configurar la movilidad para Cluster C (estático)
     MobilityHelper mobilityC;
-    mobilityC.SetPositionAllocator("ns3::GridPositionAllocator",
-        "MinX", DoubleValue(100.0),
-        "MinY", DoubleValue(100.0),
-        "DeltaX", DoubleValue(5.0),
-        "DeltaY", DoubleValue(10.0),
-        "GridWidth", UintegerValue(3),
-        "LayoutType", StringValue("RowFirst"));
-    // movilidad (Random Walk)
+    Ptr<ListPositionAllocator> positionAllocC = CreateObject<ListPositionAllocator>();
+
+    // Posiciones para los nodos en forma de triángulo
+    positionAllocC->Add(Vector(80.0, 45.0, 0.0)); // Nodo 1 en el centro
+    positionAllocC->Add(Vector(75.0, 50.0, 0.0)); // Nodo 2 a la izquierda
+    positionAllocC->Add(Vector(85.0, 50.0, 0.0)); // Nodo 3 a la derecha
+
+    mobilityC.SetPositionAllocator(positionAllocC);
     mobilityC.SetMobilityModel("ns3::RandomWalk2dMobilityModel",
         "Mode", StringValue("Time"),
         "Time", StringValue("2s"),
