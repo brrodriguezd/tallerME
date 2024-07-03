@@ -23,7 +23,6 @@
 #include "ns3/yans-wifi-channel.h"
 #include "ns3/yans-wifi-helper.h"
 
-
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("ManetSimulation");
@@ -40,6 +39,8 @@ int main(int argc, char* argv[])
 {
     // Log Component
     LogComponentEnable("ManetSimulation", LOG_LEVEL_INFO);
+    LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);
+    LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO);
 
     // Local Variables 
     uint32_t stopTime = 20.0;
@@ -172,31 +173,37 @@ int main(int argc, char* argv[])
     // ---------------- Definir el Tráfico de Red -----------------
 
     uint16_t port = 9;
-    // Create an application to send UDP packets from a node in cluster A to a node in cluster B
-    OnOffHelper onoffToB("ns3::UdpSocketFactory", InetSocketAddress(interfacesB.GetAddress(0), port));
-    onoffToB.SetConstantRate(DataRate("500kbps"));
-    ApplicationContainer appToB = onoffToB.Install(clusterA.Get(0));
-    appToB.Start(Seconds(1.0));
-    appToB.Stop(Seconds(19.0));
 
-    // Create an application to send UDP packets from a node in cluster C to a node in cluster B
-    OnOffHelper onoffToC("ns3::UdpSocketFactory", InetSocketAddress(interfacesC.GetAddress(0), port));
-    onoffToC.SetConstantRate(DataRate("500kbps"));
-    ApplicationContainer appToC = onoffToC.Install(clusterA.Get(0));
-    appToC.Start(Seconds(1.0));
-    appToC.Stop(Seconds(19.0));
+    // Create a server application on a node in cluster B
+    UdpEchoServerHelper echoServerB(port);
+    ApplicationContainer serverAppB = echoServerB.Install(clusterB.Get(0));
+    serverAppB.Start(Seconds(0.0));
+    serverAppB.Stop(Seconds(20.0));
 
-    // Packet sinks to receive these packets on the destination nodes
-    //sink for B
-    PacketSinkHelper sinkToB("ns3::UdpSocketFactory", InetSocketAddress(Ipv4Address::GetAny(), port));
-    ApplicationContainer sinkAppToB = sinkToB.Install(clusterB.Get(0));
-    sinkAppToB.Start(Seconds(0.0));
-    sinkAppToB.Stop(Seconds(20.0));
-    //sink for C
-    PacketSinkHelper sinkToC("ns3::UdpSocketFactory", InetSocketAddress(Ipv4Address::GetAny(), port));
-    ApplicationContainer sinkAppToC = sinkToC.Install(clusterC.Get(0));
-    sinkAppToC.Start(Seconds(0.0));
-    sinkAppToC.Stop(Seconds(20.0));
+    // Create a server application on a node in cluster C
+    UdpEchoServerHelper echoServerC(port);
+    ApplicationContainer serverAppC = echoServerC.Install(clusterC.Get(0));
+    serverAppC.Start(Seconds(0.0));
+    serverAppC.Stop(Seconds(20.0));
+
+    // Create a client application to send UDP packets from a node in cluster A to a node in cluster B
+    UdpEchoClientHelper echoClientB(interfacesB.GetAddress(0), port);
+    echoClientB.SetAttribute("MaxPackets", UintegerValue(100));
+    echoClientB.SetAttribute("Interval", TimeValue(Seconds(1.0)));
+    echoClientB.SetAttribute("PacketSize", UintegerValue(1024));
+    ApplicationContainer clientAppB = echoClientB.Install(clusterA.Get(0));
+    clientAppB.Start(Seconds(1.0));
+    clientAppB.Stop(Seconds(19.0));
+
+    // Create a client application to send UDP packets from a node in cluster A to a node in cluster C
+    UdpEchoClientHelper echoClientC(interfacesC.GetAddress(0), port);
+    echoClientC.SetAttribute("MaxPackets", UintegerValue(100));
+    echoClientC.SetAttribute("Interval", TimeValue(Seconds(1.0)));
+    echoClientC.SetAttribute("PacketSize", UintegerValue(1024));
+    ApplicationContainer clientAppC = echoClientC.Install(clusterA.Get(1));
+    clientAppC.Start(Seconds(1.0));
+    clientAppC.Stop(Seconds(19.0));
+
     // ------------------------------------------------------------
 
 
@@ -207,7 +214,7 @@ int main(int argc, char* argv[])
     wifiPhy.EnablePcap("clusterA", devicesA);
     wifiPhy.EnablePcap("clusterB", devicesB);
     wifiPhy.EnablePcap("clusterC", devicesC);
-    
+
     // Enable ASCII tracing
     AsciiTraceHelper ascii;
     wifiPhy.EnableAsciiAll(ascii.CreateFileStream("manet-simulation.tr"));
